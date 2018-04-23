@@ -81,6 +81,10 @@
 
             // sounds
             this.soundClick = game.add.audio("click");
+            this.backgroundMusic = game.add.audio("bgm1");
+            this.backgroundMusic.volume = .03;
+            this.backgroundMusic.loop = true;
+            this.backgroundMusic.play();
 
             // graphics
             this._background = game.add.image(0, 0, 'back_layer_1');

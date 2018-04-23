@@ -74,6 +74,7 @@
             //game.load.spritesheet("ic_building_type", "images/main/ic_building_sheet_150x150.png", 300, 300);
 
             game.load.audio('click', 'audio/paper1.wav');
+            game.load.audio('bgm1', 'audio/bgm1.mp3');
         }
 
         , create: function () {
