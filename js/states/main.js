@@ -71,9 +71,9 @@
 
         }
 
-        , style_hudText:{ font: "56px Barlow Condensed", fill: "#86d500", align: "center" }
-        , style_titleText:{ font: "32px Barlow Condensed", fill: "#86d500", align: "center" }
-        , style_finalText:{ font: "56px Barlow Condensed", fill: "#000000", align: "center" }
+        , style_hudText:{ font: "86px Nanum Brush Script", fill: "#86d500", align: "center" }
+        , style_titleText:{ font: "42px Nanum Brush Script", fill: "#86d500", align: "center" }
+        , style_finalText:{ font: "86px Nanum Brush Script", fill: "#000000", align: "center" }
 
         , create: function() {
             game.input.mouse.callbackContext = this;
