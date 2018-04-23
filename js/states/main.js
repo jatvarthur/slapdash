@@ -3,8 +3,15 @@
     var STATE = {
         SWITCHING_IN: 1,
         SWITCHING_OUT: 2,
-        PAINT: 3
+        PAINT: 3,
+        GAME_OVER: 4
     };
+
+    var PICTURES = [
+        'picture_1', 'picture_2', 'picture_3', 'picture_4',
+        'picture_5', 'picture_6', 'picture_7', 'picture_8',
+        'picture_9'
+    ];
 
     var stateMain = {
         _MT: {}
@@ -21,6 +28,8 @@
         , _player: {}
         // current picture data
         , _picture: {}
+        // current picture index
+        , _pictureIndex: 0
 
         , preload: function() {
 
@@ -92,7 +101,7 @@
             this._textClock.anchor.set(0, 0);
 
 
-            this._switchPicture('picture_1');
+            this._nextPicture();
         }
 
         , _generateGraphics: function() {
@@ -112,6 +121,8 @@
             this._player.colors = [];
             this._player.activeColor = 0;
             this._player.reward = 0;
+
+            this._pictureIndex = -1;
         }
 
         , _switchPicture: function(name) {
@@ -154,6 +165,7 @@
             this._picture.imageData = game.make.bitmapData(this._picture.image.width, this._picture.image.height);
             this._picture.imageData.draw(this._picture.image, 0, 0);
             this._picture.imageData.update();
+
             // display
             this._mainPicture = game.make.image(0, 0, this._picture.imageData);
             this._mainPicture.x = game.world.width / 2;
@@ -161,27 +173,25 @@
             this._mainPicture.anchor.set(0.5, 0);
             this._images.add(this._mainPicture);
             this._miniature = game.make.image(0, 0, name + '_ref');
-            this._miniature.scale.set(0.25, 0.25);
-            this._miniature.x = this._mainPicture.x + this._mainPicture.width / 2 + 60;
-            this._miniature.y = 90;
+            this._miniature.x = game.world.width / 2 + 300;
+            this._miniature.y = 85;
             this._miniature.angle = -12;
             this._images.add(this._miniature);
 
             // select first player color
             this._player.colors.length = 0;
             this._picture.colors.forEach(function(count, color) {
-                this._player.colors.push(color);
+                // threshold
+                if (count > 250) this._player.colors.push(color);
             }, this);
             this._player.activeColor = 0;
             this._onColorsChanged();
             this._onActiveColorChanged();
-
-            this._images.x = game.world.width;
-            //this._holder.x = game.world.width;
-            this._state = STATE.SWITCHING_IN;
         }
 
         , _onMouseWheel: function (event) {
+            if (this._state != STATE.PAINT) return;
+
             this._player.activeColor += game.input.mouse.wheelDelta;
             var ncolors = this._player.colors.length - 1;
             if (this._player.activeColor < 0) this._player.activeColor = ncolors;
@@ -264,10 +274,11 @@
             for (var i = 0; i < this._jars_c.length; ++i) {
                 this._colors_c[i].visible = false;
             }
-            this._player.colors.forEach(function(c, i) {
-                this._colors_c[i].tint = this._convertColor(c);
+            var cntm = Math.min(this._player.colors.length, this._colors_c.length);
+            for (var i = 0; i < cntm; ++i) {
+                this._colors_c[i].tint = this._convertColor(this._player.colors[i]);
                 this._colors_c[i].visible = true;
-            }, this);
+            }
         }
 
         , _onActiveColorChanged: function() {
@@ -294,6 +305,18 @@
             this._textReward.setText('$' + this._player.reward);
         }
 
+        , _nextPicture: function() {
+            this._pictureIndex += 1;
+            if (this._pictureIndex >= PICTURES.length) {
+                this._state = STATE.GAME_OVER;
+            } else {
+                this._images.x = game.world.width;
+                //this._holder.x = game.world.width;
+                this._state = STATE.SWITCHING_IN;
+                this._switchPicture(PICTURES[this._pictureIndex]);
+            }
+        }
+
         , update: function() {
             this._updateBackground();
 
@@ -306,6 +329,9 @@
                     break;
                 case STATE.PAINT:
                     this._paint();
+                    break;
+                case STATE.GAME_OVER:
+                    this._gameOver();
                     break;
             }
         }
@@ -320,7 +346,7 @@
         , _switchingOut: function() {
             this._images.x = this._images.x + 12;
             if (this._images.x >= 1280) {
-                this._switchPicture('picture_1');
+                this._nextPicture();
             }
         }
 
@@ -336,6 +362,10 @@
             }
             this._updateBullets();
             this._updateHud();
+        }
+
+        , _gameOver: function() {
+
         }
 
         , _fire: function () {

@@ -32,6 +32,30 @@
             game.load.image("picture_1", "images/pics/pic_1_3.gif");
             game.load.image("picture_1_ref", "images/pics/pic_1_1.jpg");
             game.load.image("picture_1_mask", "images/pics/pic_1_mask.gif");
+            game.load.image("picture_2", "images/pics/pic_2_3.gif");
+            game.load.image("picture_2_ref", "images/pics/pic_2_1.jpg");
+            game.load.image("picture_2_mask", "images/pics/pic_2_2.gif");
+            game.load.image("picture_3", "images/pics/pic_3_3.gif");
+            game.load.image("picture_3_ref", "images/pics/pic_3_1.jpg");
+            game.load.image("picture_3_mask", "images/pics/pic_3_2.gif");
+            game.load.image("picture_4", "images/pics/pic_4_3.gif");
+            game.load.image("picture_4_ref", "images/pics/pic_4_1.jpg");
+            game.load.image("picture_4_mask", "images/pics/pic_4_2.gif");
+            game.load.image("picture_5", "images/pics/pic_5_3.gif");
+            game.load.image("picture_5_ref", "images/pics/pic_5_1.jpg");
+            game.load.image("picture_5_mask", "images/pics/pic_5_2.gif");
+            game.load.image("picture_6", "images/pics/pic_6_3.gif");
+            game.load.image("picture_6_ref", "images/pics/pic_6_1.jpg");
+            game.load.image("picture_6_mask", "images/pics/pic_6_2.gif");
+            game.load.image("picture_7", "images/pics/pic_7_3.gif");
+            game.load.image("picture_7_ref", "images/pics/pic_7_1.jpg");
+            game.load.image("picture_7_mask", "images/pics/pic_7_2.gif");
+            game.load.image("picture_8", "images/pics/pic_8_3.gif");
+            game.load.image("picture_8_ref", "images/pics/pic_8_1.jpg");
+            game.load.image("picture_8_mask", "images/pics/pic_8_2.gif");
+            game.load.image("picture_9", "images/pics/pic_9_3.gif");
+            game.load.image("picture_9_ref", "images/pics/pic_9_1.jpg");
+            game.load.image("picture_9_mask", "images/pics/pic_9_2.gif");
 
             //game.load.spritesheet("ic_building_type", "images/main/ic_building_sheet_150x150.png", 300, 300);
 
