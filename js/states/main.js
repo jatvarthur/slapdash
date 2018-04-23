@@ -5,37 +5,47 @@
         SWITCHING_IN: 1,
         SWITCHING_OUT: 2,
         PAINT: 3,
-        GAME_OVER: 4
+        GAME_OVER: 4,
+        WAITING: 5
     };
 
     var PICTURES = [
         {
             name: 'picture_1',
-            colors: [0xe9c579, 0x9a5129, 0x566f6a, 0x36150f]
+            colors: [0xe9c579, 0x9a5129, 0x566f6a, 0x36150f],
+            title: 'Mona Lisa - Leonardo da Vinci'
         },{
             name: 'picture_2',
-            colors: [0xf3d572, 0xd97046, 0x3b7e6c, 0xa51711]
+            colors: [0xf3d572, 0xd97046, 0x3b7e6c, 0xa51711],
+            title: 'Bathing of the Red Horse - Kuzma Petrov-Vodkin'
         },{
             name: 'picture_3',
-            colors: [0xe9dabb, 0xccad8e, 0xb5841e, 0x121b24, 0x345c9b]
+            colors: [0xe9dabb, 0xccad8e, 0xb5841e, 0x121b24, 0x345c9b],
+            title: 'Girl with a Pearl Earring - Johannes Vermeer'
         },{
             name: 'picture_4',
-            colors: [0xf6d873, 0xdb7b47, 0x1f415a, 0x1c2015]
+            colors: [0xf6d873, 0xdb7b47, 0x1f415a, 0x1c2015],
+            title: 'The Scream - Edvard Munch'
         },{
             name: 'picture_5',
-            colors: [0xfff637, 0x9fc2d6, 0x36688c, 0x181a1a]
+            colors: [0xfff637, 0x9fc2d6, 0x36688c, 0x181a1a],
+            title: 'The Starry Night - Vincent van Gogh'
         },{
             name: 'picture_6',
-            colors: [0xe3d7d7, 0x628971, 0x954f77, 0x2d262b]
+            colors: [0xe3d7d7, 0x628971, 0x954f77, 0x2d262b],
+            title: 'The Walk - Marc Chagall'
         },{
             name: 'picture_7',
-            colors: [0xf6f3e7, 0xd29b22, 0x0a2f76, 0x191611]
+            colors: [0xf6f3e7, 0xd29b22, 0x0a2f76, 0x191611],
+            title: 'Suprematist composition... -  Kazimir Malevich'
         },{
             name: 'picture_8',
-            colors: [0xf7cb38, 0x66552d, 0x3c5e39, 0x0a0c0f]
+            colors: [0xf7cb38, 0x66552d, 0x3c5e39, 0x0a0c0f],
+            title: 'The Kiss -  Klimt'
         },{
             name: 'picture_9',
-            colors: [0xe9dda1, 0x4e6468, 0x116da4, 0x202123]
+            colors: [0xe9dda1, 0x4e6468, 0x116da4, 0x202123],
+            title: 'Moonwalk - Andy Warhol'
         }
     ];
 
@@ -62,9 +72,10 @@
         }
 
         , style_hudText:{ font: "56px Barlow Condensed", fill: "#86d500", align: "center" }
+        , style_titleText:{ font: "32px Barlow Condensed", fill: "#86d500", align: "center" }
+        , style_finalText:{ font: "56px Barlow Condensed", fill: "#000000", align: "center" }
 
         , create: function() {
-            this._initPlayer();
             game.input.mouse.callbackContext = this;
             game.input.mouse.mouseWheelCallback = this._onMouseWheel;
 
@@ -86,10 +97,8 @@
             this._blot = game.make.sprite(0, 0, 'blot');
             this._blot.anchor.set(0.5);
 
-            this._images = game.add.group();
-
-            this._jars_c = new Array(6);
-            this._colors_c = new Array(6);
+            this._jars_c = new Array(5);
+            this._colors_c = new Array(5);
             this._jars = game.add.group();
             this._jars.x = 20;
             this._jars.y = game.world.height - 280;
@@ -103,8 +112,8 @@
             this._colors_c[4] = this._jars.create(292, 180, 'jars', 4);
             this._jars_c[3] = this._jars.create(232, 210, 'jars', 3);
             this._colors_c[3] = this._jars.create(232, 210, 'jars', 4);
-            this._jars_c[5] = this._jars.create(312, 270, 'jars', 3);
-            this._colors_c[5] = this._jars.create(312, 270, 'jars', 4);
+            //this._jars_c[5] = this._jars.create(312, 270, 'jars', 3);
+            //this._colors_c[5] = this._jars.create(312, 270, 'jars', 4);
             for (var i = 0; i < this._jars_c.length; ++i) {
                 this._jars_c[i].anchor.set(0.5, 1.0);
                 this._colors_c[i].anchor.set(0.5, 1.0);
@@ -112,7 +121,12 @@
                 this._colors_c[i].events.onInputDown.add(this._onColorClick, this);
             }
 
-            this._holder = game.add.image(game.world.width / 2 + 100, 0, 'holder_layer');
+            this._images = game.add.group();
+            this._textTitle = game.make.text(game.world.width / 2, game.world.height - 100, "-", this.style_titleText);
+            this._textTitle.anchor.set(0.5, 1.0);
+            this._images.add(this._textTitle);
+
+            this._holder = game.add.image(game.world.width * 2, 0, 'holder_layer');
             this._holder.anchor.set(0.5, 0);
             this._holder._w_x = game.world.width / 2 + 100;
 
@@ -120,6 +134,20 @@
             this._bullets.createMultiple(50, 'blot');
             this._bullets.setAll('anchor.x', 0.5);
             this._bullets.setAll('anchor.y', 0.5);
+
+            this._gun = game.add.image(game.world.width - 100, game.world.height, 'gun');
+            this._gun.anchor.set(1.0, 1.0);
+
+            this._results = new Array(5);
+            this._results[0] = game.add.image(game.world.width / 2, game.world.height / 2, 'ui_result1');
+            this._results[1] = game.add.image(game.world.width / 2, game.world.height / 2, 'ui_result2');
+            this._results[2] = game.add.image(game.world.width / 2, game.world.height / 2, 'ui_result3');
+            this._results[3] = game.add.image(game.world.width / 2, game.world.height / 2, 'ui_result4');
+            this._results[4] = game.add.image(game.world.width / 2, game.world.height / 2, 'ui_result5');
+            for (var i = 0; i < this._results.length; ++i) {
+                this._results[i].anchor.set(0.5, 0.5);
+                this._results[i].visible = false;
+            }
 
             this._textReward = game.add.text(20, 20, "$0", this.style_hudText);
             this._textReward.anchor.set(0, 0);
@@ -132,7 +160,6 @@
             this._progressFull.updateCrop();
 
             this._intro();
-
             //this._nextPicture();
         }
 
@@ -148,8 +175,8 @@
         }
 
         , _initPlayer: function() {
-            this._player.x = game.world.width / 2;
-            this._player.y = game.world.height - 100;
+            this._player.x = game.world.width - 350;
+            this._player.y = game.world.height - 200;
             this._player.colors = [];
             this._player.activeColor = 0;
             this._player.reward = 0;
@@ -209,6 +236,8 @@
             this._miniature.y = 85;
             this._miniature.angle = -12;
             this._images.add(this._miniature);
+            this._textTitle.setText(desc.title);
+            this._textTitle.y = this._picture.height + 150;
 
             // select first player color
             this._player.colors.length = 0;
@@ -264,7 +293,7 @@
                 ym = Math.floor(y / this._picture.accuracy),
                 color = this._player.colors[this._player.activeColor],
                 prevFilled = this._picture.filled,
-                radius = 2;
+                radius = 3;
                 //pixel = this._picture.maskData.getPixel32(xm, ym),
                 //index = this._picture.mwidth * ym + xm;
 
@@ -330,8 +359,8 @@
         }
 
         , _onFillChanged: function(prevFilled, filled) {
-            var progress = filled / this._picture.fill.length;
-            this._progressFull.cropRect.width = this._progressFull._w_width * progress;
+            this._player.progress = filled / this._picture.fill.length;
+            this._progressFull.cropRect.width = this._progressFull._w_width * this._player.progress;
             this._progressFull.updateCrop();
 
             // reward
@@ -351,7 +380,7 @@
                 this._state = STATE.GAME_OVER;
             } else {
                 this._images.x = game.world.width;
-                //this._holder.x = game.world.width;
+                this._holder.x = game.world.width + this._holder._w_x;
                 this._state = STATE.SWITCHING_IN;
                 this._switchPicture(PICTURES[this._pictureIndex]);
             }
@@ -385,6 +414,7 @@
 
         , _switchingIn: function() {
             this._images.x = this._images.x - 12;
+            this._holder.x = this._holder.x - 12;
             if (this._images.x <= 0) {
                 this._state = STATE.PAINT;
             }
@@ -392,7 +422,9 @@
 
         , _switchingOut: function() {
             this._images.x = this._images.x + 12;
+            this._holder.x = this._holder.x + 12;
             if (this._images.x >= 1280) {
+                this._hideResult();
                 this._nextPicture();
             }
         }
@@ -404,6 +436,7 @@
             this._picture.timeLeft -= game.time.elapsedMS;
             if (this._picture.timeLeft <= 0) {
                 this._killBullets();
+                this._showResult(Math.floor(Math.random() * this._results.length));
                 this._state = STATE.SWITCHING_OUT;
                 return;
             }
@@ -412,7 +445,8 @@
         }
 
         , _gameOver: function() {
-
+            this._state = STATE.WAITING;
+            this._showOutro();
         }
 
         , _fire: function () {
@@ -461,6 +495,18 @@
                 bullet.alive = false;
                 bullet.visible = false;
             }, this);
+        }
+
+        , _hideResult: function() {
+            for (var i = 0; i < this._results.length; ++i) {
+                this._results[i].visible = false;
+            }
+        }
+
+        , _showResult: function(i) {
+            this._hideResult();
+            if (i < 0 || i >= this._results.length) i = 0;
+            this._results[i].visible = true;
         }
 
         , _updateBackground: function () {
@@ -534,6 +580,7 @@
             button.anchor.set(0.5, 0.5);
             button.inputEnabled = true;
             button.events.onInputDown.add(function () {
+                this._initPlayer();
                 this._nextPicture();
                 this._closeModal();
             }, this);
@@ -543,6 +590,45 @@
 
             this._modal = dialog;
         }
+
+        , _showOutro: function() {
+            this._closeModal();
+
+            var width = 1049, height = 622;
+            var dialog = game.add.group();
+            dialog.x = game.world.width / 2 - width / 2;
+            dialog.y = game.world.height / 2 - height / 2;
+
+            var back = game.add.sprite(0, 0, "ui_w_clrd_back");
+            dialog.add(back);
+
+            var character = game.add.sprite(-80, 50, "ui_w_character");
+            dialog.add(character);
+
+            var icon = game.add.sprite(600, 250, "ui_w_final_text");
+            icon.anchor.set(0.5, 0.5);
+            dialog.add(icon);
+
+            var text = game.add.text(600, 400, "$" + this._player.reward, this.style_finalText);
+            text.anchor.set(0.5, 0.5);
+            dialog.add(text);
+
+            var posx = 580, posy = height - 46;
+            var button = game.add.sprite(posx, posy, "ui_b_play");
+            button.anchor.set(0.5, 0.5);
+            button.inputEnabled = true;
+            button.events.onInputDown.add(function () {
+                this._initPlayer();
+                this._nextPicture();
+                this._closeModal();
+            }, this);
+            dialog.add(button);
+            button.events.onInputOver.add(function (sprite) { sprite.scale.set(1.1); }, this);
+            button.events.onInputOut.add(function (sprite) { sprite.scale.set(1.0); }, this);
+
+            this._modal = dialog;
+        }
+
 
     };
 

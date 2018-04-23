@@ -28,6 +28,7 @@
             game.load.image("back_layer_3", "images/back_layer3_2.png");
 
             game.load.image("holder_layer", "images/picture_holder.png");
+            game.load.image("gun", "images/gun.png");
 
             game.load.image("picture_1", "images/pics/pic_1_3.gif");
             game.load.image("picture_1_ref", "images/pics/pic_1_1.jpg");
@@ -61,6 +62,13 @@
             game.load.image("ui_b_play", "images/ui/b_play.png");
             game.load.image("ui_w_clrd_back", "images/ui/w_clrd_back.png");
             game.load.image("ui_w_game_name", "images/ui/w_game_name.png");
+            game.load.image("ui_w_final_text", "images/ui/w_final_text.png");
+
+            game.load.image("ui_result1", "images/ui/txt_1.png");
+            game.load.image("ui_result2", "images/ui/txt_2.png");
+            game.load.image("ui_result3", "images/ui/txt_3.png");
+            game.load.image("ui_result4", "images/ui/txt_4.png");
+            game.load.image("ui_result5", "images/ui/txt_5.png");
 
 
             //game.load.spritesheet("ic_building_type", "images/main/ic_building_sheet_150x150.png", 300, 300);
