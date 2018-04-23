@@ -102,21 +102,21 @@
             this._jars = game.add.group();
             this._jars.x = 20;
             this._jars.y = game.world.height - 280;
-            this._jars_c[0] = this._jars.create(62, 170, 'jars', 0);
-            this._colors_c[0] = this._jars.create(62, 170, 'jars', 4);
-            this._jars_c[1] = this._jars.create(162, 150, 'jars', 1);
-            this._colors_c[1] = this._jars.create(162, 150, 'jars', 4);
-            this._jars_c[2] = this._jars.create(132, 230, 'jars', 2);
-            this._colors_c[2] = this._jars.create(132, 230, 'jars', 4);
-            this._jars_c[4] = this._jars.create(292, 180, 'jars', 3);
-            this._colors_c[4] = this._jars.create(292, 180, 'jars', 4);
-            this._jars_c[3] = this._jars.create(232, 210, 'jars', 3);
-            this._colors_c[3] = this._jars.create(232, 210, 'jars', 4);
+            this._jars_c[0] = this._jars.create(62, 70, 'jars', 0);
+            this._colors_c[0] = this._jars.create(62, 70, 'jars', 4);
+            this._jars_c[1] = this._jars.create(172, 50, 'jars', 1);
+            this._colors_c[1] = this._jars.create(172, 50, 'jars', 4);
+            this._jars_c[2] = this._jars.create(132, 150, 'jars', 2);
+            this._colors_c[2] = this._jars.create(132, 150, 'jars', 4);
+            this._jars_c[4] = this._jars.create(302, 70, 'jars', 3);
+            this._colors_c[4] = this._jars.create(302, 70, 'jars', 4);
+            this._jars_c[3] = this._jars.create(232, 130, 'jars', 3);
+            this._colors_c[3] = this._jars.create(232, 130, 'jars', 4);
             //this._jars_c[5] = this._jars.create(312, 270, 'jars', 3);
             //this._colors_c[5] = this._jars.create(312, 270, 'jars', 4);
             for (var i = 0; i < this._jars_c.length; ++i) {
-                this._jars_c[i].anchor.set(0.5, 1.0);
-                this._colors_c[i].anchor.set(0.5, 1.0);
+                this._jars_c[i].anchor.set(0.5, 0.5);
+                this._colors_c[i].anchor.set(0.5, 0.5);
                 this._colors_c[i].inputEnabled = true;
                 this._colors_c[i].events.onInputDown.add(this._onColorClick, this);
             }
@@ -339,12 +339,14 @@
 
         , _onColorsChanged: function() {
             for (var i = 0; i < this._jars_c.length; ++i) {
+                this._jars_c[i].visible = false;
                 this._colors_c[i].visible = false;
             }
             var cntm = Math.min(this._player.colors.length, this._colors_c.length);
             for (var i = 0; i < cntm; ++i) {
                 this._colors_c[i].tint = this._convertColor(this._player.colors[i]);
                 this._colors_c[i]._w_colorIndex = i;
+                this._jars_c[i].visible = true;
                 this._colors_c[i].visible = true;
             }
         }
@@ -560,22 +562,23 @@
         , _showIntro: function() {
             this._closeModal();
 
-            var width = 1049, height = 622;
+            var width = 1280, height = 622;
             var dialog = game.add.group();
             dialog.x = game.world.width / 2 - width / 2;
             dialog.y = game.world.height / 2 - height / 2;
 
-            var back = game.add.sprite(0, 0, "ui_w_clrd_back");
+            var back = game.add.sprite(game.world.width, 0, "ui_w_clrd_back");
+            back.anchor.set(1.0, 0.0);
             dialog.add(back);
 
-            var character = game.add.sprite(-80, 50, "ui_w_character");
+            var character = game.add.sprite(0, 50, "ui_w_character");
             dialog.add(character);
 
-            var icon = game.add.sprite(650, 300, "ui_w_game_name");
+            var icon = game.add.sprite(750, 300, "ui_w_game_name");
             icon.anchor.set(0.5, 0.5);
             dialog.add(icon);
 
-            var posx = 580, posy = height - 46;
+            var posx = 620, posy = height - 46;
             var button = game.add.sprite(posx, posy, "ui_b_play");
             button.anchor.set(0.5, 0.5);
             button.inputEnabled = true;
@@ -594,26 +597,27 @@
         , _showOutro: function() {
             this._closeModal();
 
-            var width = 1049, height = 622;
+            var width = 1280, height = 622;
             var dialog = game.add.group();
             dialog.x = game.world.width / 2 - width / 2;
             dialog.y = game.world.height / 2 - height / 2;
 
-            var back = game.add.sprite(0, 0, "ui_w_clrd_back");
+            var back = game.add.sprite(game.world.width, 0, "ui_w_clrd_back");
+            back.anchor.set(1.0, 0.0);
             dialog.add(back);
 
-            var character = game.add.sprite(-80, 50, "ui_w_character");
+            var character = game.add.sprite(0, 50, "ui_w_character");
             dialog.add(character);
 
-            var icon = game.add.sprite(600, 250, "ui_w_final_text");
+            var icon = game.add.sprite(750, 250, "ui_w_final_text");
             icon.anchor.set(0.5, 0.5);
             dialog.add(icon);
 
-            var text = game.add.text(600, 400, "$" + this._player.reward, this.style_finalText);
+            var text = game.add.text(750, 400, "$" + this._player.reward, this.style_finalText);
             text.anchor.set(0.5, 0.5);
             dialog.add(text);
 
-            var posx = 580, posy = height - 46;
+            var posx = 620, posy = height - 46;
             var button = game.add.sprite(posx, posy, "ui_b_play");
             button.anchor.set(0.5, 0.5);
             button.inputEnabled = true;
