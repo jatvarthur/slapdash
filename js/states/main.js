@@ -149,9 +149,9 @@
                 this._results[i].visible = false;
             }
 
-            this._textReward = game.add.text(20, 20, "$0", this.style_hudText);
+            this._textReward = game.add.text(20, 90, "$0", this.style_hudText);
             this._textReward.anchor.set(0, 0);
-            this._textClock = game.add.text(200, 20, "0:0", this.style_hudText);
+            this._textClock = game.add.text(20, 20, "0:0", this.style_hudText);
             this._textClock.anchor.set(0, 0);
             this._progressEmpty = game.add.image(1000, 20, "progressbar", 1);
             this._progressFull = game.add.image(1000, 20, "progressbar", 0);
