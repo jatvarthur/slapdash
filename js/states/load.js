@@ -4,8 +4,8 @@
         _MT: {}
 
         , preload: function () {
-            var empty = game.add.image(0, 0, "loadingEmpty");
-            var full = game.add.image(0, 0, "loadingFull");
+            var empty = game.add.image(0, 0, "progressbar", 1);
+            var full = game.add.image(0, 0, "progressbar", 0);
 
             empty.anchor.set(0.5, 0.5);
             empty.y = game.world.centerY;
@@ -57,9 +57,15 @@
             game.load.image("picture_9_ref", "images/pics/pic_9_1.jpg");
             game.load.image("picture_9_mask", "images/pics/pic_9_2.gif");
 
+            game.load.image("ui_w_character", "images/ui/w_character.png");
+            game.load.image("ui_b_play", "images/ui/b_play.png");
+            game.load.image("ui_w_clrd_back", "images/ui/w_clrd_back.png");
+            game.load.image("ui_w_game_name", "images/ui/w_game_name.png");
+
+
             //game.load.spritesheet("ic_building_type", "images/main/ic_building_sheet_150x150.png", 300, 300);
 
-            //game.load.audio('backgroundMusic', 'audio/austin_blues.mp3');
+            game.load.audio('click', 'audio/paper1.wav');
         }
 
         , create: function () {

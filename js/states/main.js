@@ -1,6 +1,7 @@
 ;(function() {
 
     var STATE = {
+        INTRO: 0,
         SWITCHING_IN: 1,
         SWITCHING_OUT: 2,
         PAINT: 3,
@@ -8,9 +9,34 @@
     };
 
     var PICTURES = [
-        'picture_1', 'picture_2', 'picture_3', 'picture_4',
-        'picture_5', 'picture_6', 'picture_7', 'picture_8',
-        'picture_9'
+        {
+            name: 'picture_1',
+            colors: [0xe9c579, 0x9a5129, 0x566f6a, 0x36150f]
+        },{
+            name: 'picture_2',
+            colors: [0xf3d572, 0xd97046, 0x3b7e6c, 0xa51711]
+        },{
+            name: 'picture_3',
+            colors: [0xe9dabb, 0xccad8e, 0xb5841e, 0x121b24, 0x345c9b]
+        },{
+            name: 'picture_4',
+            colors: [0xf6d873, 0xdb7b47, 0x1f415a, 0x1c2015]
+        },{
+            name: 'picture_5',
+            colors: [0xfff637, 0x9fc2d6, 0x36688c, 0x181a1a]
+        },{
+            name: 'picture_6',
+            colors: [0xe3d7d7, 0x628971, 0x954f77, 0x2d262b]
+        },{
+            name: 'picture_7',
+            colors: [0xf6f3e7, 0xd29b22, 0x0a2f76, 0x191611]
+        },{
+            name: 'picture_8',
+            colors: [0xf7cb38, 0x66552d, 0x3c5e39, 0x0a0c0f]
+        },{
+            name: 'picture_9',
+            colors: [0xe9dda1, 0x4e6468, 0x116da4, 0x202123]
+        }
     ];
 
     var stateMain = {
@@ -42,6 +68,10 @@
             game.input.mouse.callbackContext = this;
             game.input.mouse.mouseWheelCallback = this._onMouseWheel;
 
+            // sounds
+            this.soundClick = game.add.audio("click");
+
+            // graphics
             this._background = game.add.image(0, 0, 'back_layer_1');
             this._blayer2 = game.add.group();
             this._blayer2.y = 150;
@@ -52,12 +82,6 @@
             this._blayer3.y = 50;
             this._blayer3.add(game.make.image(0, 0, 'back_layer_3')).scale.set(2.0, 2.0);
             this._blayer3.add(game.make.image(1280, 0, 'back_layer_3')).scale.set(2.0, 2.0);
-
-
-            game.add.image(1000, 0, "loadingEmpty");
-            this._progress = game.add.image(1000, 0, "loadingFull");
-            this._progress.scale.set(0, 1);
-
 
             this._blot = game.make.sprite(0, 0, 'blot');
             this._blot.anchor.set(0.5);
@@ -84,6 +108,8 @@
             for (var i = 0; i < this._jars_c.length; ++i) {
                 this._jars_c[i].anchor.set(0.5, 1.0);
                 this._colors_c[i].anchor.set(0.5, 1.0);
+                this._colors_c[i].inputEnabled = true;
+                this._colors_c[i].events.onInputDown.add(this._onColorClick, this);
             }
 
             this._holder = game.add.image(game.world.width / 2 + 100, 0, 'holder_layer');
@@ -99,9 +125,15 @@
             this._textReward.anchor.set(0, 0);
             this._textClock = game.add.text(200, 20, "0:0", this.style_hudText);
             this._textClock.anchor.set(0, 0);
+            this._progressEmpty = game.add.image(1000, 20, "progressbar", 1);
+            this._progressFull = game.add.image(1000, 20, "progressbar", 0);
+            this._progressFull._w_width = this._progressFull.width;
+            this._progressFull.cropRect = new Phaser.Rectangle(0, 0, 1, this._progressFull.height);
+            this._progressFull.updateCrop();
 
+            this._intro();
 
-            this._nextPicture();
+            //this._nextPicture();
         }
 
         , _generateGraphics: function() {
@@ -125,15 +157,15 @@
             this._pictureIndex = -1;
         }
 
-        , _switchPicture: function(name) {
+        , _switchPicture: function(desc) {
             if (this._mainPicture) this._mainPicture.destroy();
             if (this._miniature) this._miniature.destroy();
 
-            this._picture.name = name;
-            this._picture.timeLeft = 0.1 * 60 * 1000;
-            this._picture.image = game.cache.getImage(name);
-            this._picture.ref = game.cache.getImage(name + '_ref');
-            this._picture.mask = game.cache.getImage(name + '_mask');
+            this._picture.name = desc.name;
+            this._picture.timeLeft = 0.5 * 60 * 1000;
+            this._picture.image = game.cache.getImage(desc.name);
+            this._picture.ref = game.cache.getImage(desc.name + '_ref');
+            this._picture.mask = game.cache.getImage(desc.name + '_mask');
             this._picture.accuracy = this._picture.image.width / this._picture.mask.width;
 
             var mwidth = this._picture.mask.width,
@@ -153,7 +185,7 @@
                 for (var j = 0; j < mwidth; ++j) {
                     this._picture.fill[mwidth * i + j] = false;
                     //AABBGGRR
-                    var pixel = this._picture.maskData.getPixel32(j, i);
+                    var pixel = this._picture.maskData.getPixel32(j, i) & 0xffffff;
                     if (this._picture.colors.has(pixel))
                         this._picture.colors.set(pixel, this._picture.colors.get(pixel) + 1);
                     else
@@ -172,7 +204,7 @@
             this._mainPicture.y = 100;
             this._mainPicture.anchor.set(0.5, 0);
             this._images.add(this._mainPicture);
-            this._miniature = game.make.image(0, 0, name + '_ref');
+            this._miniature = game.make.image(0, 0, desc.name + '_ref');
             this._miniature.x = game.world.width / 2 + 300;
             this._miniature.y = 85;
             this._miniature.angle = -12;
@@ -180,13 +212,14 @@
 
             // select first player color
             this._player.colors.length = 0;
-            this._picture.colors.forEach(function(count, color) {
+            desc.colors.forEach(function(color) {
                 // threshold
-                if (count > 250) this._player.colors.push(color);
+                this._player.colors.push(this._convertColor(color));
             }, this);
             this._player.activeColor = 0;
             this._onColorsChanged();
             this._onActiveColorChanged();
+            this._onFillChanged(0, 0);
         }
 
         , _onMouseWheel: function (event) {
@@ -196,6 +229,11 @@
             var ncolors = this._player.colors.length - 1;
             if (this._player.activeColor < 0) this._player.activeColor = ncolors;
             if (this._player.activeColor > ncolors) this._player.activeColor = 0;
+            this._onActiveColorChanged();
+        }
+
+        , _onColorClick: function(sprite) {
+            this._player.activeColor = sprite._w_colorIndex;
             this._onActiveColorChanged();
         }
 
@@ -237,7 +275,7 @@
                 for (var j = -radius; j <= radius; ++j) {
                     var xx = xm + j;
                     if (xx < 0 || xx >= this._picture.mwidth) continue;
-                    var pixel = this._picture.maskData.getPixel32(xx, yy),
+                    var pixel = this._picture.maskData.getPixel32(xx, yy) & 0xffffff,
                         index = this._picture.mwidth * yy + xx;
                     // became correct
                     if (this._picture.fill[index] !== pixel && pixel === color) {
@@ -277,6 +315,7 @@
             var cntm = Math.min(this._player.colors.length, this._colors_c.length);
             for (var i = 0; i < cntm; ++i) {
                 this._colors_c[i].tint = this._convertColor(this._player.colors[i]);
+                this._colors_c[i]._w_colorIndex = i;
                 this._colors_c[i].visible = true;
             }
         }
@@ -292,7 +331,8 @@
 
         , _onFillChanged: function(prevFilled, filled) {
             var progress = filled / this._picture.fill.length;
-            this._progress.scale.set(progress, 1);
+            this._progressFull.cropRect.width = this._progressFull._w_width * progress;
+            this._progressFull.updateCrop();
 
             // reward
             if (filled > prevFilled) {
@@ -321,6 +361,8 @@
             this._updateBackground();
 
             switch (this._state) {
+                case STATE.INTRO:
+                    break;
                 case STATE.SWITCHING_IN:
                     this._switchingIn();
                     break;
@@ -334,6 +376,11 @@
                     this._gameOver();
                     break;
             }
+        }
+
+        , _intro: function () {
+            this._state = STATE.INTRO;
+            this._showIntro();
         }
 
         , _switchingIn: function() {
@@ -369,6 +416,12 @@
         }
 
         , _fire: function () {
+            /*var x = game.input.activePointer.x - (game.world.width - this._picture.width) / 2,
+                y = game.input.activePointer.y - 100;
+            if (x < 0 || x > this._picture.width || y < 0 || y > this._picture.height)
+                return;
+            */
+
             if (game.time.now > this._nextFire && this._bullets.countDead() > 0)  {
                 this._nextFire = game.time.now + this._fireRate;
 
@@ -449,8 +502,49 @@
 
         }
 
+        /* MODALS */
+        , _closeModal: function() {
+            if (this._modal) {
+                this._modal.destroy();
+                this._modal = null;
+                this.soundClick.play();
+            }
+        }
 
-};
+        , _showIntro: function() {
+            this._closeModal();
+
+            var width = 1049, height = 622;
+            var dialog = game.add.group();
+            dialog.x = game.world.width / 2 - width / 2;
+            dialog.y = game.world.height / 2 - height / 2;
+
+            var back = game.add.sprite(0, 0, "ui_w_clrd_back");
+            dialog.add(back);
+
+            var character = game.add.sprite(-80, 50, "ui_w_character");
+            dialog.add(character);
+
+            var icon = game.add.sprite(650, 300, "ui_w_game_name");
+            icon.anchor.set(0.5, 0.5);
+            dialog.add(icon);
+
+            var posx = 580, posy = height - 46;
+            var button = game.add.sprite(posx, posy, "ui_b_play");
+            button.anchor.set(0.5, 0.5);
+            button.inputEnabled = true;
+            button.events.onInputDown.add(function () {
+                this._nextPicture();
+                this._closeModal();
+            }, this);
+            dialog.add(button);
+            button.events.onInputOver.add(function (sprite) { sprite.scale.set(1.1); }, this);
+            button.events.onInputOut.add(function (sprite) { sprite.scale.set(1.0); }, this);
+
+            this._modal = dialog;
+        }
+
+    };
 
     // exports
     window.registerState("main", stateMain);

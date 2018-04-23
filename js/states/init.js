@@ -4,8 +4,9 @@
         _MT: {}
 
         , preload: function () {
-            game.load.image("loadingEmpty", "images/progress_none.png");
-            game.load.image("loadingFull", "images/progress_all.png");
+            game.load.spritesheet("progressbar", "images/progressbar.png", 198, 50);
+            //game.load.image("progress", "images/progress_none.png");
+            //game.load.image("loadingFull", "images/progress_all.png");
             if (window.isOnMobile()) {
                 game.scale.forceOrientation(true, false); // landscape
                 /*
